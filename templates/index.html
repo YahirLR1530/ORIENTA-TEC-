@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiosco Inteligente</title>
+    <title>Kiosco Inteligente TESCI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Tipografía y Reseteos estilo iOS */
@@ -61,12 +61,12 @@
             padding-bottom: 20px;
             text-align: center;
         }
-        .apple-card:active { transform: scale(0.96); } /* Efecto al tocar */
+        .apple-card:active { transform: scale(0.96); } /* Efecto táctil de presión */
 
-        /* CONTENEDOR PARA TUS IMÁGENES */
+        /* CONTENEDOR PARA LAS IMÁGENES EN ALTA RESOLUCIÓN */
         .img-placeholder {
             width: 100%;
-            height: 160px;
+            height: 180px;
             background-color: #d2d2d7;
             object-fit: cover;
             display: block;
@@ -92,17 +92,17 @@
 
     <div id="vista-reposo" class="bg-reposo" onclick="activarSistema()">
         <h1 id="reloj" style="font-size: 7rem; font-weight: 300; letter-spacing: -3px;">00:00</h1>
-        <p class="fs-5 mt-2 text-secondary animate-pulse">Toca para interactuar</p>
+        <p class="fs-5 mt-2 text-secondary animate-pulse">Toca la pantalla para comenzar</p>
     </div>
 
     <div id="vista-activa" class="bg-activo hidden">
         <div class="header-inst shadow-sm">
-            <h2 class="mb-0" style="font-weight: 600; letter-spacing: -0.5px;">Portal Institucional</h2>
+            <h2 class="mb-0" style="font-weight: 600; letter-spacing: -0.5px;">Tecnológico de Estudios Superiores de Cuautitlán Izcalli</h2>
         </div>
 
         <div class="container mt-4">
             <p id="indicador-ia" class="text-center text-muted fs-6 mb-4" style="font-weight: 500;">
-                ✨ Ordenado de manera inteligente según la búsqueda de los estudiantes
+                ✨ El menú se ordena automáticamente según las secciones más consultadas por los alumnos
             </p>
 
             <div id="menu-principal" class="row justify-content-center"></div>
@@ -111,9 +111,9 @@
         <div id="vista-detalle" class="container mt-5 hidden">
             <div class="row justify-content-center">
                 <div class="col-md-8 apple-card p-5">
-                    <button class="btn btn-outline-dark mb-4 rounded-pill px-4 fw-bold" onclick="volverAlMenu(event)">← Atrás</button>
+                    <button class="btn btn-outline-dark mb-4 rounded-pill px-4 fw-bold" onclick="volverAlMenu(event)">← Regresar al Menú</button>
                     <h2 id="detalle-titulo" class="apple-title mb-4 fs-1"></h2>
-                    <div id="detalle-contenido" class="fs-5 p-3 text-start" style="color: #1d1d1f;"></div>
+                    <div id="detalle-contenido" class="fs-5 p-3 text-start" style="color: #1d1d1f; line-height: 1.6;"></div>
                 </div>
             </div>
         </div>
@@ -122,40 +122,45 @@
     <script>
         let timeoutInactividad;
         let tiempoInicioSesion = null;
-        const tiempoLimiteInactividad = 8000; 
+        const tiempoLimiteInactividad = 30000; // 30 segundos de tolerancia antes de regresar al protector de pantalla
 
         // ==========================================
-        // 🛠️ BASE DE DATOS DE LA INTERFAZ
-        // Aquí puedes cambiar las rutas de las imágenes
+        // 🛠️ BASE DE DATOS DE LA INTERFAZ (Información Real TESCI)
         // ==========================================
-        const categoriasBase = [
+        const categoriesBase = [
             { 
-                id: 'Trámites', titulo: 'Trámites', 
-                desc: 'Inscripciones, títulos y gestión escolar.', 
-                detalle: '• Inscripciones: Agosto<br>• Títulos: Módulo B',
-                img_src: 'ruta_imagen_tramites.jpg' // REEMPLAZA ESTO
+                id: 'Oferta', titulo: 'Oferta Educativa', 
+                desc: 'Ingenierías y licenciaturas impartidas en el plantel.', 
+                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Programas Académicos:</strong><br><br>• <b>Ingeniería Mecatrónica</b><br>• Ingeniería en Sistemas Computacionales<br>• Ingeniería Industrial<br>• Ingeniería en Logística<br>• Contador Público<br>• Arquitectura<br>• Ingeniería Química<br>• Ingeniería en Gestión Empresarial',
+                img_src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80' 
             },
             { 
-                id: 'Becas', titulo: 'Becas', 
-                desc: 'Apoyos económicos y excelencia académica.', 
-                detalle: '• Excelencia Académica<br>• Apoyo Social',
-                img_src: 'ruta_imagen_becas.jpg' // REEMPLAZA ESTO
+                id: 'Tramites', titulo: 'Control Escolar', 
+                desc: 'Procesos de reinscripción, constancias y titulación.', 
+                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Trámites Administrativos:</strong><br><br>• <b>Reinscripciones:</b> Realiza tu carga de materias en las fechas correspondientes a tu promedio.<br>• <b>Constancias de Estudio:</b> Solicitud directa en las ventanillas del Edificio Administrativo.<br>• <b>Requisitos de Titulación:</b> Acreditación del idioma Inglés, liberación de Servicio Social y validación de Residencias Profesionales.',
+                img_src: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80' 
             },
             { 
-                id: 'Mapa', titulo: 'Mapa', 
-                desc: 'Ubicación de edificios y laboratorios.', 
-                detalle: '• Edificio A: Rectoría<br>• Edificio B: Ingeniería',
-                img_src: 'ruta_imagen_mapa.jpg' // REEMPLAZA ESTO
+                id: 'Becas', titulo: 'Becas y Apoyos', 
+                desc: 'Información sobre becas institucionales, estatales y federales.', 
+                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Apoyos Disponibles:</strong><br><br>• <b>Beca de Excelencia:</b> Dirigida a estudiantes regulares con un promedio mínimo de 9.0 en el semestre anterior.<br>• <b>Jóvenes Escribiendo el Futuro:</b> Registro federal mediante la plataforma SUBES durante los periodos de apertura de la convocatoria.<br>• <b>Exención de Pago de Inscripción:</b> Trámite de apoyo socioeconómico gestionado ante el departamento de becas.',
+                img_src: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80' 
             },
             { 
-                id: 'Deportes', titulo: 'Deportes', 
-                desc: 'Talleres, torneos y actividades físicas.', 
-                detalle: '• Fútbol: 4pm<br>• Básquetbol: Auditorio',
-                img_src: 'ruta_imagen_deportes.jpg' // REEMPLAZA ESTO
+                id: 'Servicio', titulo: 'Servicio y Residencias', 
+                desc: 'Requisitos para liberar tus créditos profesionales.', 
+                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Procesos de Liberación:</strong><br><br>• <b>Servicio Social:</b> Obligatorio al cubrir el 70% de los créditos escolares. Se puede realizar en dependencias públicas o participando activamente en proyectos de investigación internos del TESCI.<br>• <b>Residencias Profesionales:</b> Se cursa al tener mínimo el 80% de créditos aprobados, aplicando un proyecto de ingeniería directo en el sector industrial u empresarial.',
+                img_src: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80' 
+            },
+            { 
+                id: 'Extraescolares', titulo: 'Actividades Extraescolares', 
+                desc: 'Talleres deportivos, culturales y cívicos obligatorios.', 
+                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Formación Integral (5 créditos obligatorios):</strong><br><br>• <b>Deportes:</b> Selecciones y talleres de Fútbol, Básquetbol, Voleibol y Atletismo.<br>• <b>Cultura y Cívica:</b> Club de Ajedrez, Danza Folclórica, Escolta Institucional y Banda de Guerra.<br><br><i>Las inscripciones a los talleres se habilitan durante las primeras dos semanas de cada semestre en el departamento deportivo y cultural.</i>',
+                img_src: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80' 
             }
         ];
 
-        // Reloj de la pantalla de reposo
+        // Función del reloj digital (Protector de pantalla)
         function actualizarReloj() {
             const ahora = new Date();
             document.getElementById('reloj').innerText = 
@@ -164,7 +169,7 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
-        // Activa el kiosco y carga el menú con IA
+        // Transición de reposo a activo
         function activarSistema() {
             tiempoInicioSesion = new Date();
             document.getElementById('vista-reposo').classList.add('hidden');
@@ -175,33 +180,33 @@
         }
 
         // ==========================================
-        // 🧠 ALGORITMO DE APRENDIZAJE E INYECCIÓN HTML
+        // 🧠 ALGORITMO DE INTELIGENCIA DE MENÚ
         // ==========================================
         async function cargarMenuInteligente() {
             const contenedorMenu = document.getElementById('menu-principal');
-            contenedorMenu.innerHTML = ''; // Limpiar menú anterior
+            contenedorMenu.innerHTML = ''; 
 
             try {
-                // Consulta al backend por las tendencias de clics
+                // Pide al servidor las estadísticas de clics recopiladas en la base de datos
                 const response = await fetch('/api/tendencias');
                 const data = await response.json();
                 
                 if (data.status === 'success') {
                     const tendencias = data.tendencias;
-                    // Ordena el menú: Si tiene muchos clics, va primero
-                    categoriasBase.sort((a, b) => {
+                    // Reordena el arreglo: la sección con más interacciones sube automáticamente al primer lugar
+                    categoriesBase.sort((a, b) => {
                         const clicsA = tendencias[a.id] || 0;
                         const clicsB = tendencias[b.id] || 0;
                         return clicsB - clicsA; 
                     });
                 }
-            } catch (e) { console.log("Error al cargar la IA, usando orden por defecto."); }
+            } catch (e) { console.log("Cargando orden por defecto..."); }
 
-            // Dibuja las tarjetas ya ordenadas
-            categoriasBase.forEach(categoria => {
+            // Generación dinámica de las tarjetas maquetadas al estilo Apple
+            categoriesBase.forEach(categoria => {
                 const htmlTarjeta = `
-                    <div class="col-md-5">
-                        <div class="apple-card" onclick="verDetalle(event, '${categoria.id}', '${categoria.detalle}')">
+                    <div class="col-md-5 col-lg-4">
+                        <div class="apple-card" onclick="verDetalle(event, '${categoria.id}', '${categoria.titulo}', \`${categoria.detalle}\`)">
                             <img src="${categoria.img_src}" alt="${categoria.titulo}" class="img-placeholder">
                             <h3 class="apple-title">${categoria.titulo}</h3>
                             <p class="apple-desc">${categoria.desc}</p>
@@ -213,6 +218,7 @@
             });
         }
 
+        // Retorno automático por falta de interacción
         function volverAReposo() {
             if (tiempoInicioSesion) {
                 const ahora = new Date();
@@ -236,12 +242,14 @@
             }
         }
 
+        // Detectar toques en cualquier parte de la pantalla activa para resetear el reloj
         document.getElementById('vista-activa').addEventListener('click', reiniciarTemporizadorInactividad);
         document.getElementById('vista-activa').addEventListener('touchstart', reiniciarTemporizadorInactividad);
 
-        function verDetalle(event, titulo, contenido) {
+        // Desplegar información detallada de la sección
+        function verDetalle(event, id, titulo, contenido) {
             event.stopPropagation(); 
-            fetch(`/api/click/${titulo}`); // Este clic entrena al algoritmo para la próxima vez
+            fetch(`/api/click/${id}`); // Almacena la interacción para retroalimentar la IA
 
             document.getElementById('menu-principal').classList.add('hidden');
             document.getElementById('indicador-ia').classList.add('hidden');
@@ -252,13 +260,14 @@
             reiniciarTemporizadorInactividad();
         }
 
+        // Botón regresar interno de la vista de detalle
         function volverAlMenu(event) {
             event.stopPropagation();
             document.getElementById('vista-detalle').classList.add('hidden');
             document.getElementById('menu-principal').classList.remove('hidden');
             document.getElementById('indicador-ia').classList.remove('hidden');
             
-            // Recargar el menú para reflejar instantáneamente el último clic
+            // Recarga el menú reordenado inmediatamente tras el clic recién registrado
             cargarMenuInteligente();
             reiniciarTemporizadorInactividad();
         }
