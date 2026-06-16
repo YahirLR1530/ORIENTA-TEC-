@@ -6,271 +6,93 @@
     <title>Kiosco Inteligente TESCI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Tipografía y Reseteos estilo iOS */
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            user-select: none; 
-            overflow-x: hidden;
-            margin: 0;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; user-select: none; margin: 0; background-color: #f5f7fa; }
         .hidden { display: none !important; }
-
-        /* PANTALLA DE REPOSO (Dark Mode Minimalista) */
-        .bg-reposo { 
-            background-color: #000000; 
-            color: white; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            cursor: pointer; 
-        }
-        .animate-pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-
-        /* PANTALLA ACTIVA (Fondo dinámico claro) */
-        .bg-activo {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            color: #1d1d1f;
-        }
-
-        .header-inst { 
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            color: #1d1d1f; 
-            padding: 20px; 
-            text-align: center; 
-            font-weight: bold; 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* TARJETAS ESTILO APPLE (Glassmorphism) */
-        .apple-card { 
-            background: rgba(255, 255, 255, 0.65); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4); 
-            border-radius: 24px; 
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); 
-            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-            margin: 15px;
-            padding-bottom: 20px;
-            text-align: center;
-        }
-        .apple-card:active { transform: scale(0.96); } /* Efecto táctil de presión */
-
-        /* CONTENEDOR PARA LAS IMÁGENES EN ALTA RESOLUCIÓN */
-        .img-placeholder {
-            width: 100%;
-            height: 180px;
-            background-color: #d2d2d7;
-            object-fit: cover;
-            display: block;
-        }
-
-        .apple-title { font-weight: 600; font-size: 1.5rem; margin-top: 15px; letter-spacing: -0.5px; }
-        .apple-desc { color: #86868b; font-size: 0.95rem; padding: 0 15px; }
-        
-        .apple-btn { 
-            background-color: #0071e3; 
-            color: white; 
-            border: none; 
-            border-radius: 20px; 
-            padding: 8px 24px; 
-            font-weight: 600; 
-            margin-top: 10px; 
-            transition: background-color 0.2s; 
-        }
-        .apple-btn:active { background-color: #005bb5; }
+        .bg-reposo { background-color: #000; color: white; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+        .bg-activo { min-height: 100vh; color: #1d1d1f; }
+        .header-inst { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); padding: 20px; text-align: center; font-weight: bold; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .apple-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin: 15px; padding: 20px; text-align: center; transition: transform 0.2s; }
+        .img-placeholder { width: 100%; height: 180px; object-fit: cover; border-radius: 15px; margin-bottom: 15px; }
+        .apple-btn { background-color: #0071e3; color: white; border: none; border-radius: 20px; padding: 10px 25px; font-weight: 600; margin-top: 15px; cursor: pointer; }
+        .apple-btn:hover { background-color: #0077ed; }
     </style>
 </head>
 <body>
 
     <div id="vista-reposo" class="bg-reposo" onclick="activarSistema()">
-        <h1 id="reloj" style="font-size: 7rem; font-weight: 300; letter-spacing: -3px;">00:00</h1>
-        <p class="fs-5 mt-2 text-secondary animate-pulse">Toca la pantalla para comenzar</p>
+        <h1 id="reloj" style="font-size: 7rem;">00:00</h1>
+        <p>Toca la pantalla para comenzar</p>
     </div>
 
     <div id="vista-activa" class="bg-activo hidden">
-        <div class="header-inst shadow-sm">
-            <h2 class="mb-0" style="font-weight: 600; letter-spacing: -0.5px;">Tecnológico de Estudios Superiores de Cuautitlán Izcalli</h2>
-        </div>
-
+        <div class="header-inst"><h2>Tecnológico de Estudios Superiores de Cuautitlán Izcalli</h2></div>
         <div class="container mt-4">
-            <p id="indicador-ia" class="text-center text-muted fs-6 mb-4" style="font-weight: 500;">
-                ✨ El menú se ordena automáticamente según las secciones más consultadas por los alumnos
-            </p>
-
             <div id="menu-principal" class="row justify-content-center"></div>
         </div>
-
+        
         <div id="vista-detalle" class="container mt-5 hidden">
             <div class="row justify-content-center">
                 <div class="col-md-8 apple-card p-5">
-                    <button class="btn btn-outline-dark mb-4 rounded-pill px-4 fw-bold" onclick="volverAlMenu(event)">← Regresar al Menú</button>
-                    <h2 id="detalle-titulo" class="apple-title mb-4 fs-1"></h2>
-                    <div id="detalle-contenido" class="fs-5 p-3 text-start" style="color: #1d1d1f; line-height: 1.6;"></div>
+                    <button class="btn btn-outline-dark mb-4" onclick="volverAlMenu()">← Regresar al Menú</button>
+                    <h2 id="detalle-titulo" class="mb-4"></h2>
+                    <div id="detalle-contenido" class="text-start fs-5"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let timeoutInactividad;
-        let tiempoInicioSesion = null;
-        const tiempoLimiteInactividad = 30000; // 30 segundos de tolerancia antes de regresar al protector de pantalla
-
-        // ==========================================
-        // 🛠️ BASE DE DATOS DE LA INTERFAZ (Información Real TESCI)
-        // ==========================================
+        // Datos centralizados
         const categoriesBase = [
-            { 
-                id: 'Oferta', titulo: 'Oferta Educativa', 
-                desc: 'Ingenierías y licenciaturas impartidas en el plantel.', 
-                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Programas Académicos:</strong><br><br>• <b>Ingeniería Mecatrónica</b><br>• Ingeniería en Sistemas Computacionales<br>• Ingeniería Industrial<br>• Ingeniería en Logística<br>• Contador Público<br>• Arquitectura<br>• Ingeniería Química<br>• Ingeniería en Gestión Empresarial',
-                img_src: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80' 
-            },
-            { 
-                id: 'Tramites', titulo: 'Control Escolar', 
-                desc: 'Procesos de reinscripción, constancias y titulación.', 
-                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Trámites Administrativos:</strong><br><br>• <b>Reinscripciones:</b> Realiza tu carga de materias en las fechas correspondientes a tu promedio.<br>• <b>Constancias de Estudio:</b> Solicitud directa en las ventanillas del Edificio Administrativo.<br>• <b>Requisitos de Titulación:</b> Acreditación del idioma Inglés, liberación de Servicio Social y validación de Residencias Profesionales.',
-                img_src: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=600&q=80' 
-            },
-            { 
-                id: 'Becas', titulo: 'Becas y Apoyos', 
-                desc: 'Información sobre becas institucionales, estatales y federales.', 
-                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Apoyos Disponibles:</strong><br><br>• <b>Beca de Excelencia:</b> Dirigida a estudiantes regulares con un promedio mínimo de 9.0 en el semestre anterior.<br>• <b>Jóvenes Escribiendo el Futuro:</b> Registro federal mediante la plataforma SUBES durante los periodos de apertura de la convocatoria.<br>• <b>Exención de Pago de Inscripción:</b> Trámite de apoyo socioeconómico gestionado ante el departamento de becas.',
-                img_src: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80' 
-            },
-            { 
-                id: 'Servicio', titulo: 'Servicio y Residencias', 
-                desc: 'Requisitos para liberar tus créditos profesionales.', 
-                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Procesos de Liberación:</strong><br><br>• <b>Servicio Social:</b> Obligatorio al cubrir el 70% de los créditos escolares. Se puede realizar en dependencias públicas o participando activamente en proyectos de investigación internos del TESCI.<br>• <b>Residencias Profesionales:</b> Se cursa al tener mínimo el 80% de créditos aprobados, aplicando un proyecto de ingeniería directo en el sector industrial u empresarial.',
-                img_src: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=600&q=80' 
-            },
-            { 
-                id: 'Extraescolares', titulo: 'Actividades Extraescolares', 
-                desc: 'Talleres deportivos, culturales y cívicos obligatorios.', 
-                detalle: '<strong style="color:#0071e3; font-size:1.4rem;">Formación Integral (5 créditos obligatorios):</strong><br><br>• <b>Deportes:</b> Selecciones y talleres de Fútbol, Básquetbol, Voleibol y Atletismo.<br>• <b>Cultura y Cívica:</b> Club de Ajedrez, Danza Folclórica, Escolta Institucional y Banda de Guerra.<br><br><i>Las inscripciones a los talleres se habilitan durante las primeras dos semanas de cada semestre en el departamento deportivo y cultural.</i>',
-                img_src: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80' 
-            }
+            { id: 'Oferta', titulo: 'Oferta Educativa', desc: 'Ingenierías y licenciaturas.', detalle: '<strong>Programas:</strong><br>• Ingeniería Mecatrónica<br>• Ingeniería en Sistemas<br>• Ingeniería Industrial<br>• Ingeniería en Logística<br>• Contador Público<br>• Arquitectura', img: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600' },
+            { id: 'Tramites', titulo: 'Control Escolar', desc: 'Procesos y reinscripciones.', detalle: '<strong>Trámites:</strong><br>• Reinscripciones: Fechas según promedio.<br>• Constancias: Ventanillas Administrativas.<br>• Titulación: Inglés y Servicio Social.', img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600' },
+            { id: 'Becas', titulo: 'Becas y Apoyos', desc: 'Becas institucionales.', detalle: '<strong>Apoyos:</strong><br>• Excelencia (Promedio 9.0+).<br>• Jóvenes Escribiendo el Futuro (SUBES).<br>• Exención de pago (Estudio socioeconómico).', img: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600' },
+            { id: 'Servicio', titulo: 'Servicio y Residencias', desc: 'Liberación de créditos.', detalle: '<strong>Requisitos:</strong><br>• Servicio Social: 70% créditos.<br>• Residencias: 80% créditos, proyecto industrial aplicado.', img: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600' },
+            { id: 'Extraescolares', titulo: 'Actividades Extraescolares', desc: 'Deportes y cultura.', detalle: '<strong>Formación Integral:</strong><br>• Deportes: Fútbol, básquetbol, voleibol.<br>• Cultura: Ajedrez, danza y banda de guerra.', img: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600' }
         ];
 
-        // Función del reloj digital (Protector de pantalla)
-        function actualizarReloj() {
-            const ahora = new Date();
-            document.getElementById('reloj').innerText = 
-                String(ahora.getHours()).padStart(2, '0') + ':' + String(ahora.getMinutes()).padStart(2, '0');
-        }
-        setInterval(actualizarReloj, 1000);
-        actualizarReloj();
-
-        // Transición de reposo a activo
         function activarSistema() {
-            tiempoInicioSesion = new Date();
             document.getElementById('vista-reposo').classList.add('hidden');
             document.getElementById('vista-activa').classList.remove('hidden');
-            
-            cargarMenuInteligente();
-            reiniciarTemporizadorInactividad();
+            renderizarMenu();
         }
 
-        // ==========================================
-        // 🧠 ALGORITMO DE INTELIGENCIA DE MENÚ
-        // ==========================================
-        async function cargarMenuInteligente() {
-            const contenedorMenu = document.getElementById('menu-principal');
-            contenedorMenu.innerHTML = ''; 
-
-            try {
-                // Pide al servidor las estadísticas de clics recopiladas en la base de datos
-                const response = await fetch('/api/tendencias');
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    const tendencias = data.tendencias;
-                    // Reordena el arreglo: la sección con más interacciones sube automáticamente al primer lugar
-                    categoriesBase.sort((a, b) => {
-                        const clicsA = tendencias[a.id] || 0;
-                        const clicsB = tendencias[b.id] || 0;
-                        return clicsB - clicsA; 
-                    });
-                }
-            } catch (e) { console.log("Cargando orden por defecto..."); }
-
-            // Generación dinámica de las tarjetas maquetadas al estilo Apple
-            categoriesBase.forEach(categoria => {
-                const htmlTarjeta = `
-                    <div class="col-md-5 col-lg-4">
-                        <div class="apple-card" onclick="verDetalle(event, '${categoria.id}', '${categoria.titulo}', \`${categoria.detalle}\`)">
-                            <img src="${categoria.img_src}" alt="${categoria.titulo}" class="img-placeholder">
-                            <h3 class="apple-title">${categoria.titulo}</h3>
-                            <p class="apple-desc">${categoria.desc}</p>
-                            <button class="apple-btn">Ver Más</button>
-                        </div>
+        function renderizarMenu() {
+            const menu = document.getElementById('menu-principal');
+            menu.innerHTML = '';
+            categoriesBase.forEach(c => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4';
+                col.innerHTML = `
+                    <div class="apple-card">
+                        <img src="${c.img}" class="img-placeholder">
+                        <h3>${c.titulo}</h3>
+                        <p>${c.desc}</p>
+                        <button class="apple-btn" onclick="verDetalle('${c.titulo}', \`${c.detalle}\`)">Ver Más</button>
                     </div>
                 `;
-                contenedorMenu.insertAdjacentHTML('beforeend', htmlTarjeta);
+                menu.appendChild(col);
             });
         }
 
-        // Retorno automático por falta de interacción
-        function volverAReposo() {
-            if (tiempoInicioSesion) {
-                const ahora = new Date();
-                const duracion = ((ahora - tiempoInicioSesion) / 1000).toFixed(2);
-                const inicioStr = tiempoInicioSesion.toTimeString().split(' ')[0];
-                const finStr = ahora.toTimeString().split(' ')[0];
-                fetch(`/api/sesion/guardar/${inicioStr}/${finStr}/${duracion}`);
-                tiempoInicioSesion = null;
-            }
-            document.getElementById('vista-detalle').classList.add('hidden');
-            document.getElementById('menu-principal').classList.remove('hidden');
-            document.getElementById('indicador-ia').classList.remove('hidden');
-            document.getElementById('vista-activa').classList.add('hidden');
-            document.getElementById('vista-reposo').classList.remove('hidden');
-        }
-
-        function reiniciarTemporizadorInactividad() {
-            clearTimeout(timeoutInactividad);
-            if (!document.getElementById('vista-activa').classList.contains('hidden')) {
-                timeoutInactividad = setTimeout(volverAReposo, tiempoLimiteInactividad);
-            }
-        }
-
-        // Detectar toques en cualquier parte de la pantalla activa para resetear el reloj
-        document.getElementById('vista-activa').addEventListener('click', reiniciarTemporizadorInactividad);
-        document.getElementById('vista-activa').addEventListener('touchstart', reiniciarTemporizadorInactividad);
-
-        // Desplegar información detallada de la sección
-        function verDetalle(event, id, titulo, contenido) {
-            event.stopPropagation(); 
-            fetch(`/api/click/${id}`); // Almacena la interacción para retroalimentar la IA
-
+        function verDetalle(titulo, contenido) {
             document.getElementById('menu-principal').classList.add('hidden');
-            document.getElementById('indicador-ia').classList.add('hidden');
             document.getElementById('vista-detalle').classList.remove('hidden');
-            
             document.getElementById('detalle-titulo').innerText = titulo;
             document.getElementById('detalle-contenido').innerHTML = contenido;
-            reiniciarTemporizadorInactividad();
         }
 
-        // Botón regresar interno de la vista de detalle
-        function volverAlMenu(event) {
-            event.stopPropagation();
+        function volverAlMenu() {
             document.getElementById('vista-detalle').classList.add('hidden');
             document.getElementById('menu-principal').classList.remove('hidden');
-            document.getElementById('indicador-ia').classList.remove('hidden');
-            
-            // Recarga el menú reordenado inmediatamente tras el clic recién registrado
-            cargarMenuInteligente();
-            reiniciarTemporizadorInactividad();
         }
+
+        // Reloj
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('reloj').innerText = 
+                now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }, 1000);
     </script>
 </body>
 </html>
