@@ -3,97 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PORTAL INSTITUCIONAL - Touch Kiosk</title>
+    <title>Kiosco Inteligente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Tipografía y Reseteos estilo iOS */
         body { 
-            background-color: #121212; 
-            color: white; 
-            font-family: 'Arial', sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            user-select: none; 
             overflow-x: hidden;
-            user-select: none; /* Evita que el usuario seleccione texto al tocar la pantalla */
+            margin: 0;
         }
+        .hidden { display: none !important; }
+
+        /* PANTALLA DE REPOSO (Dark Mode Minimalista) */
         .bg-reposo { 
             background-color: #000000; 
+            color: white; 
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
             align-items: center; 
-            cursor: pointer; /* Indica que toda la pantalla es clickeable */
+            cursor: pointer; 
         }
-        .header-inst { background-color: #ffffff; color: #790000; padding: 20px; text-align: center; font-weight: bold; }
-        .card-menu { 
-            background-color: white; 
-            color: black; 
-            border-radius: 20px; 
-            padding: 30px; 
+        .animate-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* PANTALLA ACTIVA (Fondo dinámico claro) */
+        .bg-activo {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #1d1d1f;
+        }
+
+        .header-inst { 
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #1d1d1f; 
+            padding: 20px; 
             text-align: center; 
-            margin: 15px; 
-            height: 250px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            transition: transform 0.2s;
+            font-weight: bold; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        /* Efecto visual sutil al presionar en pantallas touch */
-        .card-menu:active { transform: scale(0.98); }
-        .btn-custom { background-color: #790000; color: white; border: none; font-weight: bold; padding: 10px 20px; border-radius: 10px; }
-        .btn-custom:hover { background-color: #550000; color: white; }
-        .hidden { display: none !important; }
+
+        /* TARJETAS ESTILO APPLE (Glassmorphism) */
+        .apple-card { 
+            background: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            border-radius: 24px; 
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); 
+            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            margin: 15px;
+            padding-bottom: 20px;
+            text-align: center;
+        }
+        .apple-card:active { transform: scale(0.96); } /* Efecto al tocar */
+
+        /* CONTENEDOR PARA TUS IMÁGENES */
+        .img-placeholder {
+            width: 100%;
+            height: 160px;
+            background-color: #d2d2d7;
+            object-fit: cover;
+            display: block;
+        }
+
+        .apple-title { font-weight: 600; font-size: 1.5rem; margin-top: 15px; letter-spacing: -0.5px; }
+        .apple-desc { color: #86868b; font-size: 0.95rem; padding: 0 15px; }
+        
+        .apple-btn { 
+            background-color: #0071e3; 
+            color: white; 
+            border: none; 
+            border-radius: 20px; 
+            padding: 8px 24px; 
+            font-weight: 600; 
+            margin-top: 10px; 
+            transition: background-color 0.2s; 
+        }
+        .apple-btn:active { background-color: #005bb5; }
     </style>
 </head>
 <body>
 
     <div id="vista-reposo" class="bg-reposo" onclick="activarSistema()">
-        <h1 id="reloj" style="font-size: 6rem; font-weight: bold;">00:00</h1>
-        <p class="fs-4 mt-2 text-secondary animate-pulse">Toca la pantalla para iniciar</p>
+        <h1 id="reloj" style="font-size: 7rem; font-weight: 300; letter-spacing: -3px;">00:00</h1>
+        <p class="fs-5 mt-2 text-secondary animate-pulse">Toca para interactuar</p>
     </div>
 
-    <div id="vista-activa" class="hidden">
-        <div class="header-inst shadow">
-            <h2>TESCI - Portal Informativo Interactiva</h2>
+    <div id="vista-activa" class="bg-activo hidden">
+        <div class="header-inst shadow-sm">
+            <h2 class="mb-0" style="font-weight: 600; letter-spacing: -0.5px;">Portal Institucional</h2>
         </div>
 
-        <div id="menu-principal" class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-5">
-                    <div class="card-menu shadow">
-                        <h3>Trámites</h3>
-                        <p class="text-muted">Inscripciones, títulos y gestión escolar.</p>
-                        <button class="btn btn-custom w-100" onclick="verDetalle(event, 'Trámites', '• Inscripciones: Agosto<br>• Títulos: Módulo B')">Ver Más</button>
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="card-menu shadow">
-                        <h3>Becas</h3>
-                        <p class="text-muted">Apoyos económicos y excelencia académica.</p>
-                        <button class="btn btn-custom w-100" onclick="verDetalle(event, 'Becas', '• Excelencia Académica<br>• Apoyo Social')">Ver Más</button>
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="card-menu shadow">
-                        <h3>Mapa</h3>
-                        <p class="text-muted">Ubicación de edificios y laboratorios.</p>
-                        <button class="btn btn-custom w-100" onclick="verDetalle(event, 'Mapa', '• Edificio A: Rectoría<br>• Edificio B: Ingeniería')">Ver Más</button>
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="card-menu shadow">
-                        <h3>Deportes</h3>
-                        <p class="text-muted">Talleres, torneos y actividades físicas.</p>
-                        <button class="btn btn-custom w-100" onclick="verDetalle(event, 'Deportes', '• Fútbol: 4pm<br>• Básquetbol: Auditorio')">Ver Más</button>
-                    </div>
-                </div>
-            </div>
+        <div class="container mt-4">
+            <p id="indicador-ia" class="text-center text-muted fs-6 mb-4" style="font-weight: 500;">
+                ✨ Ordenado de manera inteligente según la búsqueda de los estudiantes
+            </p>
+
+            <div id="menu-principal" class="row justify-content-center"></div>
         </div>
 
         <div id="vista-detalle" class="container mt-5 hidden">
             <div class="row justify-content-center">
-                <div class="col-md-8 bg-white text-dark p-5 rounded-4 shadow">
-                    <button class="btn btn-outline-secondary mb-4" onclick="volverAlMenu(event)">← Volver</button>
-                    <h2 id="detalle-titulo" class="fw-bold mb-4 text-center"></h2>
-                    <div id="detalle-contenido" class="fs-5 p-3 border rounded bg-light"></div>
+                <div class="col-md-8 apple-card p-5">
+                    <button class="btn btn-outline-dark mb-4 rounded-pill px-4 fw-bold" onclick="volverAlMenu(event)">← Atrás</button>
+                    <h2 id="detalle-titulo" class="apple-title mb-4 fs-1"></h2>
+                    <div id="detalle-contenido" class="fs-5 p-3 text-start" style="color: #1d1d1f;"></div>
                 </div>
             </div>
         </div>
@@ -102,9 +122,40 @@
     <script>
         let timeoutInactividad;
         let tiempoInicioSesion = null;
-        const tiempoLimiteInactividad = 8000; // 8 segundos en milisegundos
+        const tiempoLimiteInactividad = 8000; 
 
-        // Actualizar Reloj
+        // ==========================================
+        // 🛠️ BASE DE DATOS DE LA INTERFAZ
+        // Aquí puedes cambiar las rutas de las imágenes
+        // ==========================================
+        const categoriasBase = [
+            { 
+                id: 'Trámites', titulo: 'Trámites', 
+                desc: 'Inscripciones, títulos y gestión escolar.', 
+                detalle: '• Inscripciones: Agosto<br>• Títulos: Módulo B',
+                img_src: 'ruta_imagen_tramites.jpg' // REEMPLAZA ESTO
+            },
+            { 
+                id: 'Becas', titulo: 'Becas', 
+                desc: 'Apoyos económicos y excelencia académica.', 
+                detalle: '• Excelencia Académica<br>• Apoyo Social',
+                img_src: 'ruta_imagen_becas.jpg' // REEMPLAZA ESTO
+            },
+            { 
+                id: 'Mapa', titulo: 'Mapa', 
+                desc: 'Ubicación de edificios y laboratorios.', 
+                detalle: '• Edificio A: Rectoría<br>• Edificio B: Ingeniería',
+                img_src: 'ruta_imagen_mapa.jpg' // REEMPLAZA ESTO
+            },
+            { 
+                id: 'Deportes', titulo: 'Deportes', 
+                desc: 'Talleres, torneos y actividades físicas.', 
+                detalle: '• Fútbol: 4pm<br>• Básquetbol: Auditorio',
+                img_src: 'ruta_imagen_deportes.jpg' // REEMPLAZA ESTO
+            }
+        ];
+
+        // Reloj de la pantalla de reposo
         function actualizarReloj() {
             const ahora = new Date();
             document.getElementById('reloj').innerText = 
@@ -113,57 +164,89 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
-        // Activa el kiosco al tocar la pantalla de reposo
+        // Activa el kiosco y carga el menú con IA
         function activarSistema() {
             tiempoInicioSesion = new Date();
             document.getElementById('vista-reposo').classList.add('hidden');
             document.getElementById('vista-activa').classList.remove('hidden');
             
-            // Iniciar el contador de inactividad
+            cargarMenuInteligente();
             reiniciarTemporizadorInactividad();
         }
 
-        // Regresa automáticamente a la pantalla negra si nadie interactúa
+        // ==========================================
+        // 🧠 ALGORITMO DE APRENDIZAJE E INYECCIÓN HTML
+        // ==========================================
+        async function cargarMenuInteligente() {
+            const contenedorMenu = document.getElementById('menu-principal');
+            contenedorMenu.innerHTML = ''; // Limpiar menú anterior
+
+            try {
+                // Consulta al backend por las tendencias de clics
+                const response = await fetch('/api/tendencias');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const tendencias = data.tendencias;
+                    // Ordena el menú: Si tiene muchos clics, va primero
+                    categoriasBase.sort((a, b) => {
+                        const clicsA = tendencias[a.id] || 0;
+                        const clicsB = tendencias[b.id] || 0;
+                        return clicsB - clicsA; 
+                    });
+                }
+            } catch (e) { console.log("Error al cargar la IA, usando orden por defecto."); }
+
+            // Dibuja las tarjetas ya ordenadas
+            categoriasBase.forEach(categoria => {
+                const htmlTarjeta = `
+                    <div class="col-md-5">
+                        <div class="apple-card" onclick="verDetalle(event, '${categoria.id}', '${categoria.detalle}')">
+                            <img src="${categoria.img_src}" alt="${categoria.titulo}" class="img-placeholder">
+                            <h3 class="apple-title">${categoria.titulo}</h3>
+                            <p class="apple-desc">${categoria.desc}</p>
+                            <button class="apple-btn">Ver Más</button>
+                        </div>
+                    </div>
+                `;
+                contenedorMenu.insertAdjacentHTML('beforeend', htmlTarjeta);
+            });
+        }
+
         function volverAReposo() {
             if (tiempoInicioSesion) {
                 const ahora = new Date();
                 const duracion = ((ahora - tiempoInicioSesion) / 1000).toFixed(2);
-                
                 const inicioStr = tiempoInicioSesion.toTimeString().split(' ')[0];
                 const finStr = ahora.toTimeString().split(' ')[0];
-
-                // Guardar métricas de la sesión mediante la API
                 fetch(`/api/sesion/guardar/${inicioStr}/${finStr}/${duracion}`);
                 tiempoInicioSesion = null;
             }
-
-            // Resetear vistas al estado original de reposo
             document.getElementById('vista-detalle').classList.add('hidden');
             document.getElementById('menu-principal').classList.remove('hidden');
+            document.getElementById('indicador-ia').classList.remove('hidden');
             document.getElementById('vista-activa').classList.add('hidden');
             document.getElementById('vista-reposo').classList.remove('hidden');
         }
 
-        // Resetea el tiempo de espera cada vez que detecta actividad (clic o touch)
         function reiniciarTemporizadorInactividad() {
             clearTimeout(timeoutInactividad);
-            // Solo cuenta la inactividad si la pantalla activa es visible
             if (!document.getElementById('vista-activa').classList.contains('hidden')) {
                 timeoutInactividad = setTimeout(volverAReposo, tiempoLimiteInactividad);
             }
         }
 
-        // Escuchar clics o eventos touch globales en la pantalla activa para resetear el timeout
         document.getElementById('vista-activa').addEventListener('click', reiniciarTemporizadorInactividad);
         document.getElementById('vista-activa').addEventListener('touchstart', reiniciarTemporizadorInactividad);
 
-        // Navegación del Kiosco
         function verDetalle(event, titulo, contenido) {
-            event.stopPropagation(); // Evita que el click se duplique en los listeners globales
-            fetch(`/api/click/${titulo}`);
+            event.stopPropagation(); 
+            fetch(`/api/click/${titulo}`); // Este clic entrena al algoritmo para la próxima vez
 
             document.getElementById('menu-principal').classList.add('hidden');
+            document.getElementById('indicador-ia').classList.add('hidden');
             document.getElementById('vista-detalle').classList.remove('hidden');
+            
             document.getElementById('detalle-titulo').innerText = titulo;
             document.getElementById('detalle-contenido').innerHTML = contenido;
             reiniciarTemporizadorInactividad();
@@ -173,6 +256,10 @@
             event.stopPropagation();
             document.getElementById('vista-detalle').classList.add('hidden');
             document.getElementById('menu-principal').classList.remove('hidden');
+            document.getElementById('indicador-ia').classList.remove('hidden');
+            
+            // Recargar el menú para reflejar instantáneamente el último clic
+            cargarMenuInteligente();
             reiniciarTemporizadorInactividad();
         }
     </script>

@@ -46,13 +46,27 @@ def guardar_sesion(inicio, fin, duracion):
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- MODIFICACIÓN PARA DESPLIEGUE EN LA NUBE ---
+# --- NUEVO ALGORITMO DE TENDENCIAS ---
+@app.route('/api/tendencias')
+def obtener_tendencias():
+    try:
+        conn = sqlite3.connect('estadisticas_kiosco.db')
+        cursor = conn.cursor()
+        # Analiza históricamente qué secciones tienen más demanda
+        cursor.execute('''SELECT seccion, COUNT(seccion) as popularidad 
+                          FROM interacciones 
+                          GROUP BY seccion 
+                          ORDER BY popularidad DESC''')
+        resultados = cursor.fetchall()
+        conn.close()
+        
+        # Convierte el análisis a un formato que la página web pueda entender
+        tendencias = {fila[0]: fila[1] for fila in resultados}
+        return jsonify({"status": "success", "tendencias": tendencias})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 if __name__ == "__main__":
     init_database()
-    
-    # Render asigna un puerto automáticamente en la variable de entorno 'PORT'.
-    # Si corres el código en tu compu local, usará el puerto 5000 por defecto.
     port = int(os.environ.get("PORT", 5000))
-    
-    # Quitamos el modo debug=True para producción en la nube
     app.run(host='0.0.0.0', port=port)
